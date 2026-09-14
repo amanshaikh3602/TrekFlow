@@ -20,15 +20,59 @@ function seedAdminAccount(db: Database.Database): void {
     const env_admin_email = readEnv().adminBootstrap.email;
     const env_admin_pw = readEnv().adminBootstrap.password;
     const adminEnvProvided = !!(env_admin_email || env_admin_pw);
+    // ADMIN_FORCE_RESET=true — upsert the admin even when users already exist.
+    // Requires both ADMIN_EMAIL and ADMIN_PASSWORD to be set. Useful for
+    // recovery on Railway/Docker when the first-run random password was lost.
+    // Remove the env var (or set it to false) after the first successful login.
+    const forceReset = (process.env.ADMIN_FORCE_RESET || '').trim().toLowerCase();
+    const adminForceReset = forceReset === 'true' || forceReset === '1' || forceReset === 'yes';
 
     const userCount = (db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count;
     if (userCount > 0) {
+      // ADMIN_FORCE_RESET: bypass the first-run guard and forcefully upsert the
+      // admin account so a locked-out operator can regain access without wiping
+      // the database or exec-ing into the container.
+      if (adminForceReset && env_admin_email && env_admin_pw) {
+        const bcrypt = require('bcryptjs');
+        const hash = bcrypt.hashSync(env_admin_pw, BCRYPT_COST);
+        const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(env_admin_email) as { id: number } | undefined;
+        if (existing) {
+          db.prepare('UPDATE users SET password_hash = ?, role = ?, must_change_password = 0 WHERE LOWER(email) = LOWER(?)').run(hash, 'admin', env_admin_email);
+          console.log('');
+          console.log('╔══════════════════════════════════════════════╗');
+          console.log('║  TREK — ADMIN_FORCE_RESET: Password Updated  ║');
+          console.log('╠══════════════════════════════════════════════╣');
+          console.log(`║  Email:   ${env_admin_email.padEnd(34)}║`);
+          console.log('║  Role set to admin. Remove ADMIN_FORCE_RESET  ║');
+          console.log('║  env var after your first successful login.   ║');
+          console.log('╚══════════════════════════════════════════════╝');
+          console.log('');
+        } else {
+          // Account doesn't exist yet — create it.
+          let username = 'admin';
+          let n = 1;
+          while (db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) username = `admin${n++}`;
+          db.prepare('INSERT INTO users (username, email, password_hash, role, must_change_password) VALUES (?, ?, ?, ?, 0)').run(username, env_admin_email, hash, 'admin');
+          console.log('');
+          console.log('╔══════════════════════════════════════════════╗');
+          console.log('║  TREK — ADMIN_FORCE_RESET: Account Created   ║');
+          console.log('╠══════════════════════════════════════════════╣');
+          console.log(`║  Email:   ${env_admin_email.padEnd(34)}║`);
+          console.log(`║  User:    ${username.padEnd(34)}║`);
+          console.log('║  Remove ADMIN_FORCE_RESET after first login.  ║');
+          console.log('╚══════════════════════════════════════════════╝');
+          console.log('');
+        }
+        return;
+      }
+
       // ADMIN_EMAIL/ADMIN_PASSWORD only take effect on the first run (empty database). Once a
       // user exists they are silently ignored — a common trip-up: people add the vars after the
       // fact, restart, nothing changes, and there is no hint why. Say so instead of staying silent.
       if (adminEnvProvided) {
         console.warn('[admin] ADMIN_EMAIL/ADMIN_PASSWORD are set, but users already exist — these only apply on first run (empty database) and are being ignored.');
-        console.warn('[admin] Change an existing password from Settings after signing in, reset the admin (see the Troubleshooting wiki), or start with an empty data volume to re-run setup.');
+        console.warn('[admin] To forcefully reset an existing admin, also set ADMIN_FORCE_RESET=true (requires both ADMIN_EMAIL and ADMIN_PASSWORD).');
+        console.warn('[admin] Or change an existing password from Settings after signing in, reset the admin (see the Troubleshooting wiki), or start with an empty data volume to re-run setup.');
       }
       return;
     }
