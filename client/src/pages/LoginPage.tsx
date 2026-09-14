@@ -1235,7 +1235,19 @@ export default function LoginPage(): React.ReactElement {
               <Plane size={18} />
               {t('login.demoHint')}
             </button>
-          )}
+          {/* Developer Credit */}
+          <div
+            style={{
+              marginTop: 28,
+              textAlign: 'center',
+              fontSize: 'calc(12px * var(--fs-scale-body, 1))',
+              color: '#9ca3af',
+              letterSpacing: '0.02em',
+              fontWeight: 400,
+            }}
+          >
+            Developed by <span style={{ fontWeight: 600, color: '#4b5563' }}>Aman Shaikh</span>
+          </div>
         </div>
       </div>
 

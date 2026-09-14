@@ -252,7 +252,7 @@ const settings: TranslationStrings = {
   'settings.about.description':
     'TREK is a self-hosted travel planner that helps you organize your trips from the first idea to the last memory. Day planning, budget, packing lists, photos and much more — all in one place, on your own server.',
   'settings.about.madeWith': 'Made with',
-  'settings.about.madeBy': 'by Maurice and a growing open-source community.',
+  'settings.about.madeBy': 'by Aman Shaikh and a growing open-source community.',
   'settings.username': 'Username',
   'settings.email': 'Email',
   'settings.role': 'Role',

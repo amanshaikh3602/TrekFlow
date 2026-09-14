@@ -397,7 +397,7 @@ TrekFlow is licensed under the **[GNU Affero General Public License v3.0](LICENS
 
 <div align="center">
 
-Made with ❤️ for travellers everywhere
+Made with ❤️ by **Aman Shaikh** & open-source contributors
 
 **[⬆ Back to top](#-trekflow)**
 
