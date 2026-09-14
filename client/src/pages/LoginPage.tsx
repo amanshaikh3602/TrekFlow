@@ -421,6 +421,26 @@ export default function LoginPage(): React.ReactElement {
           >
             {t('login.description')}
           </p>
+
+          <div
+            style={{
+              marginTop: 20,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 16px',
+              borderRadius: 99,
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(8px)',
+              fontSize: 'calc(12px * var(--fs-scale-body, 1))',
+              color: 'rgba(255,255,255,0.85)',
+              letterSpacing: '0.02em',
+            }}
+          >
+            <span>Developed by</span>
+            <span style={{ fontWeight: 700, color: '#ffffff' }}>Aman Shaikh</span>
+          </div>
         </div>
       </div>
 
@@ -1082,8 +1102,20 @@ export default function LoginPage(): React.ReactElement {
                     >
                       {mode === 'login' ? t('login.register') : t('login.signIn')}
                     </button>
-                  </p>
-                )}
+                {/* Developer Credit inside Auth Card */}
+                <div
+                  style={{
+                    marginTop: 20,
+                    paddingTop: 16,
+                    borderTop: '1px solid #f3f4f6',
+                    textAlign: 'center',
+                    fontSize: 'calc(12px * var(--fs-scale-body, 1))',
+                    color: '#9ca3af',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  Developed by <span style={{ fontWeight: 600, color: '#374151' }}>Aman Shaikh</span>
+                </div>
               </>
             )}
           </div>

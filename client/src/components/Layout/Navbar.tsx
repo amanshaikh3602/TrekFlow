@@ -319,6 +319,10 @@ export default function Navbar({ tripTitle, tripId, onBack, showBack, onShare }:
                     {t('nav.logout')}
                   </button>
                 </div>
+
+                <div className="py-2 px-4 border-t border-edge-secondary text-center text-xs text-content-faint">
+                  Developed by <span className="font-semibold text-content-secondary">Aman Shaikh</span>
+                </div>
               </div>
             </>,
             document.body
