@@ -17,8 +17,8 @@ function isOidcOnlyConfigured(): boolean {
 
 function seedAdminAccount(db: Database.Database): void {
   try {
-    const env_admin_email = readEnv().adminBootstrap.email;
-    const env_admin_pw = readEnv().adminBootstrap.password;
+    const env_admin_email = readEnv().adminBootstrap.email || process.env.ADMIN_EMAIL;
+    const env_admin_pw = readEnv().adminBootstrap.password || process.env.ADMIN_PASSWORD || process.env.ADMTN_PASSWORD;
     const adminEnvProvided = !!(env_admin_email || env_admin_pw);
     // ADMIN_FORCE_RESET=true — upsert the admin even when users already exist.
     // Requires both ADMIN_EMAIL and ADMIN_PASSWORD to be set. Useful for
